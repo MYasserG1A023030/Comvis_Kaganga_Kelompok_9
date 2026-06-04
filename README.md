@@ -1,15 +1,24 @@
 # Comvis_Kaganga_Kelompok_9
-Model Deteksi Aksara Kaganga
 
-# Anggota Kelompok
+Model deteksi Aksara Kaganga/Ulu Rejang menggunakan YOLOv8.
+
+## Anggota Kelompok
+
 1. Aditya Saputa (G1A023024)
 2. Muhammad Yasser Ghifari Tegar Awally (G1A023030)
 3. Migel Ray Sirait (G1A023088)
 
-# Deteksi Aksara Kaganga/Ulu Rejang Menggunakan YOLOv8
+## Deskripsi Project
 
-Project ini adalah sistem computer vision untuk mendeteksi Aksara Kaganga atau Aksara Ulu Rejang pada gambar menggunakan model object detection YOLOv8. Model dilatih untuk mengenali aksara dalam bentuk suku kata, lalu menghasilkan bounding box, nama kelas aksara, dan nilai confidence untuk setiap aksara yang terdeteksi.
-Project ini digunakan sebagai dasar eksperimen computer vision untuk pengenalan aksara daerah, khususnya pada proses deteksi Aksara Kaganga dari citra digital.
+Project ini adalah sistem computer vision untuk mendeteksi Aksara Kaganga atau Aksara Ulu Rejang pada gambar. Sistem menggunakan model object detection YOLOv8 untuk mengenali aksara dalam bentuk suku kata, lalu menghasilkan bounding box, nama kelas aksara, dan nilai confidence untuk setiap objek yang terdeteksi.
+
+Secara umum, alur kerja project adalah:
+
+```text
+Dataset YOLO -> Training YOLOv8 -> Evaluasi model -> Prediksi aksara
+```
+
+Project ini dapat digunakan sebagai dasar eksperimen pengenalan aksara daerah berbasis citra digital, khususnya untuk deteksi Aksara Kaganga/Ulu Rejang.
 
 ## Teknologi yang Digunakan
 
@@ -17,11 +26,11 @@ Project ini digunakan sebagai dasar eksperimen computer vision untuk pengenalan 
 | --- | --- |
 | Bahasa | Python |
 | Framework model | Ultralytics YOLOv8 |
-| Model awal | `yolov8n.pt` |
-| Jenis task | Object Detection |
+| Task | Object Detection |
 | Format dataset | YOLO format |
-| Akselerasi | CUDA/GPU NVIDIA |
+| Model awal training | `yolov8n.pt` |
 | Output utama | Model `.pt`, metrik evaluasi, gambar hasil prediksi, dan label deteksi |
+| Akselerasi | CUDA/GPU NVIDIA, sesuai konfigurasi `train.py` |
 
 ## Dataset
 
@@ -35,7 +44,7 @@ Ringkasan dataset lokal:
 | Validation | 166 | 166 | `datasets/valid/` |
 | Test | 64 | 64 | `datasets/test/` |
 
-Dataset memiliki `253` kelas aksara/suku kata. Contoh kelas yang tersedia antara lain `a`, `ba`, `ka`, `nga`, `nyu`, `yang`, dan banyak variasi suku kata lain yang didefinisikan di `datasets/data.yaml`.
+Dataset memiliki `253` kelas aksara/suku kata. Daftar lengkap kelas berada di `datasets/data.yaml`. Contoh kelas yang tersedia antara lain `a`, `ba`, `ka`, `nga`, `nyu`, `yang`, dan variasi suku kata lain.
 
 Sumber dataset:
 
@@ -70,9 +79,11 @@ Setiap file label `.txt` berisi anotasi bounding box dalam format YOLO:
 class_id x_center y_center width height
 ```
 
-Nilai koordinat pada label YOLO sudah dinormalisasi terhadap ukuran gambar.
+Nilai `x_center`, `y_center`, `width`, dan `height` sudah dinormalisasi terhadap ukuran gambar.
 
 ## Struktur Project
+
+Struktur utama project:
 
 ```text
 project/
@@ -85,46 +96,37 @@ project/
 |   +-- detect/
 |       +-- runs/
 |       |   +-- train/
+|       |   |   +-- kaganga_v1/
+|       |   |       +-- weights/
 |       |   +-- predict/
-|       +-- val*/
+|       |       +-- hasil/
+|       +-- val/
 +-- train.py
 +-- eval.py
 +-- predict.py
-+-- cek.py
-+-- yolov8n.pt
 +-- yolo26n.pt
++-- yolov8n.pt
++-- yolov8s.pt
 ```
 
-Penjelasan file utama:
+Penjelasan file dan folder utama:
 
 | File/Folder | Fungsi |
 | --- | --- |
-| `train.py` | Script utama untuk melatih model YOLOv8 pada dataset Aksara Kaganga. |
-| `eval.py` | Script evaluasi model terbaik pada validation set. |
-| `predict.py` | Script prediksi untuk gambar baru, folder gambar, atau webcam. |
-| `cek.py` | Contoh sederhana penggunaan fungsi `predict_single()` untuk satu gambar. |
+| `train.py` | Script utama untuk melatih model YOLOv8 pada dataset Aksara Kaganga/Ulu Rejang. |
+| `eval.py` | Script evaluasi model pada validation set. |
+| `predict.py` | Script prediksi untuk gambar, folder gambar, atau webcam. |
 | `datasets/data.yaml` | Konfigurasi path dataset, jumlah kelas, dan daftar nama kelas. |
 | `runs/` | Folder output otomatis dari proses training, validation, dan prediction. |
-| `*.pt` | File bobot model YOLO/PyTorch. |
-
-## Alur Kerja Project
-
-Project ini memiliki empat tahap utama:
-
-1. Menyiapkan dataset dalam format YOLO di folder `datasets/`.
-2. Melatih model YOLOv8 menggunakan `train.py`.
-3. Mengevaluasi model hasil training menggunakan `eval.py` atau validasi otomatis di akhir `train.py`.
-4. Menggunakan model untuk mendeteksi aksara pada gambar baru melalui `predict.py` atau `cek.py`.
-
-Secara umum, alurnya seperti berikut:
-
-```text
-Dataset YOLO -> Training YOLOv8 -> Model best.pt -> Evaluasi -> Prediksi aksara
-```
+| `yolov8n.pt` | Bobot YOLOv8 nano yang digunakan sebagai model awal training. |
+| `yolov8s.pt` | Bobot YOLOv8 small untuk alternatif eksperimen model. |
+| `yolo26n.pt` | File bobot model `.pt` lain untuk alternatif eksperimen. |
 
 ## Instalasi
 
-Project dapat dijalankan di dalam virtual environment agar dependency Python berada dalam lingkungan yang terpisah.
+Project dapat dijalankan di dalam virtual environment agar dependency Python terpisah dari environment utama.
+
+Buat virtual environment:
 
 ```bash
 python -m venv .venv
@@ -142,11 +144,11 @@ Install dependency utama:
 pip install ultralytics
 ```
 
-Jika ingin menggunakan GPU NVIDIA, pastikan driver NVIDIA, CUDA, dan versi PyTorch yang terpasang sudah mendukung CUDA. Package `ultralytics` biasanya akan menggunakan PyTorch yang tersedia di environment.
+Jika ingin menggunakan GPU NVIDIA, pastikan driver NVIDIA, CUDA, dan PyTorch yang terpasang sudah mendukung CUDA. Package `ultralytics` akan menggunakan PyTorch yang tersedia di environment.
 
 ## Training Model
 
-Training dijalankan melalui:
+Training dijalankan dengan command:
 
 ```bash
 python train.py
@@ -159,7 +161,7 @@ Konfigurasi utama training berada di bagian atas `train.py`:
 | `DATA_YAML` | `datasets/data.yaml` | File konfigurasi dataset. |
 | `MODEL` | `yolov8n.pt` | Model YOLOv8 nano sebagai pretrained model awal. |
 | `EPOCHS` | `100` | Jumlah maksimum epoch training. |
-| `IMG_SIZE` | `416` | Ukuran input gambar saat training. |
+| `IMG_SIZE` | `640` | Ukuran input gambar saat training. |
 | `BATCH_SIZE` | `4` | Jumlah gambar per batch. |
 | `WORKERS` | `0` | Mematikan multiprocessing agar aman di Windows. |
 | `DEVICE` | `cuda` | Menggunakan GPU NVIDIA/CUDA. |
@@ -169,34 +171,38 @@ Konfigurasi utama training berada di bagian atas `train.py`:
 | `save_period` | `10` | Checkpoint disimpan setiap 10 epoch. |
 | `patience` | `20` | Early stopping jika metrik tidak membaik. |
 
-Script `train.py` juga menggunakan augmentasi data, antara lain variasi warna, rotasi kecil, translasi, scaling, dan mosaic. Augmentasi horizontal dan vertical flip dimatikan karena bentuk aksara dapat berubah makna jika dibalik.
+Script `train.py` juga mengaktifkan augmentasi data seperti variasi warna, rotasi kecil, translasi, scaling, dan mosaic. Horizontal flip dan vertical flip dimatikan karena bentuk aksara dapat berubah makna jika dibalik.
+
+Setelah training selesai, `train.py` mengambil lokasi output aktual dari Ultralytics melalui `results.save_dir`, lalu melakukan evaluasi otomatis menggunakan model `weights/best.pt` dari hasil training tersebut.
 
 ## Evaluasi Model
 
-Setelah training selesai, `train.py` otomatis melakukan validasi menggunakan model terbaik `best.pt` dan menampilkan metrik:
-
-| Metrik | Arti singkat |
-| --- | --- |
-| `mAP50` | Rata-rata akurasi deteksi pada threshold IoU 0.50. |
-| `mAP50-95` | Rata-rata akurasi pada beberapa threshold IoU dari 0.50 sampai 0.95. |
-| `Precision` | Seberapa banyak prediksi model yang benar dari seluruh prediksi yang dibuat. |
-| `Recall` | Seberapa banyak objek sebenarnya yang berhasil ditemukan model. |
-
-Evaluasi juga dapat dijalankan manual dengan:
+Evaluasi manual dapat dijalankan dengan:
 
 ```bash
 python eval.py
 ```
 
-Model yang digunakan pada `eval.py` berada pada path:
+Metrik yang ditampilkan:
+
+| Metrik | Arti singkat |
+| --- | --- |
+| `mAP50` | Rata-rata akurasi deteksi pada threshold IoU 0.50. |
+| `mAP50-95` | Rata-rata akurasi pada beberapa threshold IoU dari 0.50 sampai 0.95. |
+| `Precision` | Perbandingan prediksi benar terhadap seluruh prediksi yang dibuat model. |
+| `Recall` | Perbandingan objek yang berhasil ditemukan terhadap seluruh objek sebenarnya. |
+
+Konfigurasi model pada `eval.py` menggunakan path:
 
 ```text
-runs\detect\runs\train\kaganga_v1-4\weights\best.pt
+runs\detect\runs\train\kaganga_v1\weights\best.pt
 ```
+
+Path tersebut mengarah ke model terbaik dari eksperimen `kaganga_v1`.
 
 ## Prediksi Gambar
 
-Prediksi dijalankan melalui:
+Prediksi dijalankan dengan:
 
 ```bash
 python predict.py
@@ -204,32 +210,32 @@ python predict.py
 
 Konfigurasi utama prediksi berada di `predict.py`:
 
-| Parameter | Nilai default | Keterangan |
+| Parameter | Nilai | Keterangan |
 | --- | --- | --- |
 | `MODEL_PATH` | `runs\detect\runs\train\kaganga_v1\weights\best.pt` | Path model yang digunakan untuk prediksi. |
 | `SOURCE` | `datasets/test/images` | Sumber gambar, bisa berupa satu gambar, folder, atau `0` untuk webcam. |
 | `CONF` | `0.25` | Confidence threshold minimum. |
 | `IOU` | `0.45` | IoU threshold untuk Non-Maximum Suppression. |
 | `IMG_SIZE` | `416` | Ukuran gambar saat inference. |
-| `SAVE_DIR` | `runs/predict` | Folder penyimpanan hasil prediksi. |
+| `SAVE_DIR` | `runs/predict` | Folder penyimpanan hasil prediksi baru. |
 
 Output prediksi meliputi:
 
 | Output | Keterangan |
 | --- | --- |
 | Gambar hasil deteksi | Gambar dengan bounding box, label kelas, dan confidence. |
-| Label `.txt` | Hasil deteksi dalam format teks. |
+| Label `.txt` | Hasil deteksi dalam format teks YOLO. |
 | Confidence | Nilai keyakinan model untuk setiap prediksi. |
-| Ringkasan terminal | Jumlah aksara terdeteksi pada setiap gambar. |
+| Ringkasan terminal | Jumlah aksara yang terdeteksi pada setiap gambar. |
 | Urutan aksara | Aksara diurutkan dari kiri ke kanan berdasarkan posisi bounding box. |
 
-Hasil prediksi disimpan pada folder:
+Jika menggunakan konfigurasi default `predict.py`, hasil prediksi baru akan disimpan ke:
 
 ```text
 runs/predict/hasil/
 ```
 
-Pada repo saat ini juga terdapat hasil prediksi di:
+Artefak prediksi lain berada di:
 
 ```text
 runs/detect/runs/predict/hasil/
@@ -237,35 +243,42 @@ runs/detect/runs/predict/hasil/
 
 ## Prediksi Satu Gambar
 
-File `cek.py` berisi contoh penggunaan fungsi `predict_single()` dari `predict.py`.
+Untuk prediksi satu gambar, gunakan fungsi `predict_single()` dari `predict.py`.
 
-Jalankan:
-
-```bash
-python cek.py
-```
-
-Contoh konsep penggunaannya:
+Contoh penggunaan:
 
 ```python
 from predict import predict_single
 
-hasil = predict_single(r"datasets\test\images\3_jpg.rf.09612c2902eaf8ac9193bff9abd81b3c.jpg")
+hasil = predict_single(r"datasets\test\images\103_jpg.rf.9bbd8c9d7defd7ea4de352ced697c4ed.jpg")
 print("Aksara terdeteksi:", hasil)
 ```
 
-Fungsi `predict_single()` akan mengembalikan list nama kelas aksara yang terdeteksi, sudah diurutkan dari kiri ke kanan.
+Fungsi `predict_single()` akan mengembalikan list nama kelas aksara yang terdeteksi dan sudah diurutkan dari kiri ke kanan.
 
 ## Hasil Training dan Artefak Output
 
-Hasil training YOLOv8 biasanya tersimpan di folder eksperimen dalam `runs/`. Pada project ini ditemukan output training seperti:
+Artefak training berada di:
 
 ```text
 runs/detect/runs/train/kaganga_v1/
-runs/detect/runs/train/kaganga_v1-4/
 ```
 
-Artefak penting yang dihasilkan:
+File model:
+
+```text
+runs/detect/runs/train/kaganga_v1/weights/best.pt
+runs/detect/runs/train/kaganga_v1/weights/last.pt
+runs/detect/runs/train/kaganga_v1/weights/epoch0.pt
+runs/detect/runs/train/kaganga_v1/weights/epoch10.pt
+runs/detect/runs/train/kaganga_v1/weights/epoch20.pt
+runs/detect/runs/train/kaganga_v1/weights/epoch30.pt
+runs/detect/runs/train/kaganga_v1/weights/epoch40.pt
+runs/detect/runs/train/kaganga_v1/weights/epoch50.pt
+runs/detect/runs/train/kaganga_v1/weights/epoch60.pt
+```
+
+Artefak penting lain:
 
 | Artefak | Fungsi |
 | --- | --- |
@@ -282,27 +295,16 @@ Artefak penting yang dihasilkan:
 | `val_batch*_pred.jpg` | Contoh hasil prediksi model pada validation set. |
 | `val_batch*_labels.jpg` | Ground truth label pada validation set. |
 
-Berdasarkan `results.csv` yang tersimpan, metrik training dan validasi dapat dianalisis per epoch. File ini menjadi ringkasan numerik untuk melihat perkembangan performa model selama proses pelatihan.
-
-## Lokasi Model
-
-Model hasil training tersimpan sebagai file bobot PyTorch dengan ekstensi `.pt`. File utama yang digunakan untuk evaluasi dan prediksi adalah `best.pt`, yaitu model terbaik dari proses validasi.
+Artefak validasi berada di:
 
 ```text
-runs\detect\runs\train\kaganga_v1\weights\best.pt
-runs\detect\runs\train\kaganga_v1-4\weights\best.pt
-```
-
-Pada `predict.py`, model dipanggil melalui variabel `MODEL_PATH`:
-
-```python
-MODEL_PATH = r"runs\detect\runs\train\kaganga_v1-4\weights\best.pt"
+runs/detect/val/
 ```
 
 ## Ringkasan Command
 
 ```bash
-# Install dependency
+# Install dependency utama
 pip install ultralytics
 
 # Training model
@@ -313,11 +315,8 @@ python eval.py
 
 # Prediksi folder/gambar
 python predict.py
-
-# Cek prediksi satu gambar
-python cek.py
 ```
 
 ## Kesimpulan
 
-Project ini membangun pipeline deteksi Aksara Kaganga/Ulu Rejang menggunakan YOLOv8, mulai dari dataset berformat YOLO, proses training, evaluasi performa, sampai prediksi gambar baru. Dengan 253 kelas aksara/suku kata dan struktur dataset train-validation-test, project ini merepresentasikan alur kerja lengkap sistem pengenalan aksara daerah berbasis computer vision.
+Project ini membangun pipeline deteksi Aksara Kaganga/Ulu Rejang menggunakan YOLOv8, mulai dari dataset berformat YOLO, proses training, evaluasi performa, sampai prediksi gambar baru. Sistem ini menyediakan alur kerja lengkap untuk melatih model, mengevaluasi performa, dan menjalankan deteksi aksara melalui script Python yang terstruktur.
